@@ -18,6 +18,7 @@ type Config struct {
 }
 
 type AppConfig struct {
+	AppName     string
 	Environment string
 	LogLevel    string
 }
@@ -96,6 +97,7 @@ func InitConfig() *Config {
 }
 
 func initAppConfig() AppConfig {
+	appName := os.Getenv("APP_NAME")
 	environment := os.Getenv("APP_ENVIRONMENT")
 	logLevel := os.Getenv("APP_LOGLEVEL")
 	if logLevel == "" {
@@ -103,6 +105,7 @@ func initAppConfig() AppConfig {
 	}
 
 	return AppConfig{
+		AppName:     appName,
 		Environment: environment,
 		LogLevel:    logLevel,
 	}
