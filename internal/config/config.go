@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	App         AppConfig
+	Filebeat    FilebeatConfig
 	HttpServer  HttpServerConfig
 	Database    DatabaseConfig
 	Redis       RedisConfig
@@ -21,6 +22,11 @@ type AppConfig struct {
 	AppName     string
 	Environment string
 	LogLevel    string
+}
+
+type FilebeatConfig struct {
+	Host string
+	Port int
 }
 
 type HttpServerConfig struct {
@@ -88,6 +94,7 @@ func InitConfig() *Config {
 
 	return &Config{
 		App:         initAppConfig(),
+		Filebeat:    initFilebeatConfig(),
 		Database:    initDbConfig(),
 		HttpServer:  initHttpServerConfig(),
 		Redis:       initRedisConfig(),
@@ -108,6 +115,21 @@ func initAppConfig() AppConfig {
 		AppName:     appName,
 		Environment: environment,
 		LogLevel:    logLevel,
+	}
+}
+
+func initFilebeatConfig() FilebeatConfig {
+	host := os.Getenv("FILEBEAT_HOST")
+	if host == "" {
+		host = "localhost"
+	}
+	port, err := strconv.ParseInt(os.Getenv("FILEBEAT_PORT"), 10, 32)
+	if err != nil {
+		port = 7030
+	}
+	return FilebeatConfig{
+		Host: host,
+		Port: int(port),
 	}
 }
 
