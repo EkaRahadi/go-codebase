@@ -11,6 +11,8 @@ type Logger interface {
 	Errorw(msg string, keysAndValues ...interface{})
 	Fatalw(msg string, keysAndValues ...interface{})
 	Sync() error // Ensures all buffered logs are flushed.
+
+	Printf(format string, args ...interface{}) //meet Gorm logger interface
 }
 
 // SetLogger set to exported to make it easier when we want to mock the logger during tests

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 
 	"github.com/EkaRahadi/go-codebase/internal/config"
 	"github.com/EkaRahadi/go-codebase/internal/constants"
@@ -84,4 +85,31 @@ func (zl *zapLogger) Fatalw(msg string, keysAndValues ...interface{}) {
 
 func (zl *zapLogger) Sync() error {
 	return zl.sugared.Sync()
+}
+
+func (zl *zapLogger) getLogLevel(message string) (string, string) {
+	prefixes := []string{"[warn]", "[error]", "[info]"}
+
+	for _, prefix := range prefixes {
+		if strings.Contains(message, prefix) {
+			return prefix, message
+		}
+	}
+
+	return "[info]", message
+}
+
+func (zl *zapLogger) Printf(format string, args ...interface{}) {
+	level, msg := zl.getLogLevel(format)
+
+	switch level {
+	case constants.GormInfoLogLevel:
+		zl.sugared.Infof(msg, args...)
+	case constants.GormWarnLogLevel:
+		zl.sugared.Warnw(msg, args...)
+	case constants.GormErrorLogLevel:
+		zl.sugared.Errorf(msg, args...)
+	default:
+		zl.sugared.Infof(msg, args...)
+	}
 }
