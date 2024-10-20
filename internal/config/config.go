@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -69,8 +70,11 @@ type RedisConfig struct {
 }
 
 type JWTConfig struct {
-	AccessSecretKey  string
-	RefreshSecretKey string
+	AccessSecretKey      string
+	RefreshSecretKey     string
+	Issuer               string
+	AccessTokenLifespan  time.Duration
+	RefreshTokenLifespan time.Duration
 }
 
 type OauthConfig struct {
@@ -236,9 +240,21 @@ func initRedisConfig() RedisConfig {
 func initJWTConfig() JWTConfig {
 	accessSecretKey := os.Getenv("ACCESS_SECRET_KEY")
 	refreshSecretKey := os.Getenv("REFRESH_SECRET_KEY")
+	issuer := os.Getenv("JWT_ISSUER")
+	accessLifespan, err := strconv.ParseInt(os.Getenv("JWT_ACCESS_TOKEN_LIFESPAN"), 10, 32)
+	if err != nil {
+		accessLifespan = 5
+	}
+	refreshLifespan, err := strconv.ParseInt(os.Getenv("JWT_REFRESH_TOKEN_LIFESPAN"), 10, 32)
+	if err != nil {
+		refreshLifespan = 24
+	}
 	return JWTConfig{
-		AccessSecretKey:  accessSecretKey,
-		RefreshSecretKey: refreshSecretKey,
+		AccessSecretKey:      accessSecretKey,
+		RefreshSecretKey:     refreshSecretKey,
+		Issuer:               issuer,
+		AccessTokenLifespan:  time.Minute * time.Duration(accessLifespan),
+		RefreshTokenLifespan: time.Hour * time.Duration(refreshLifespan),
 	}
 }
 
