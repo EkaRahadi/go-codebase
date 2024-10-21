@@ -44,6 +44,7 @@ require (
 require (
 	github.com/gin-contrib/cors v1.7.2
 	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/google/uuid v1.6.0
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
