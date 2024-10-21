@@ -10,3 +10,9 @@ type ErrorResponse struct {
 	Code    string      `json:"code"`
 	Data    interface{} `json:"data"`
 }
+
+type SuccessResponse struct {
+	Message string      `json:"message"`
+	Code    string      `json:"code"`
+	Data    interface{} `json:"data"`
+}
