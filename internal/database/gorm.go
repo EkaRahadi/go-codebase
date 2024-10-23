@@ -8,6 +8,7 @@ import (
 	"github.com/EkaRahadi/go-codebase/internal/config"
 	"github.com/EkaRahadi/go-codebase/internal/constants"
 	"github.com/EkaRahadi/go-codebase/internal/logger"
+	"github.com/uptrace/opentelemetry-go-extra/otelgorm"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
@@ -55,6 +56,11 @@ func InitGorm(cfg *config.Config) *gorm.DB {
 	})
 	if err != nil {
 		logger.Log.Fatalw("error initializing database: ", err.Error())
+	}
+
+	// Add auto instrumentation
+	if err := db.Use(otelgorm.NewPlugin()); err != nil {
+		logger.Log.Fatalw("error instrumenting database: ", err.Error())
 	}
 
 	dbinstance, err := db.DB()

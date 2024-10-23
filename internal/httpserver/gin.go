@@ -21,6 +21,7 @@ import (
 	"github.com/EkaRahadi/go-codebase/internal/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func StartGinHttpServer(cfg *config.Config) {
@@ -65,6 +66,9 @@ func StartGinHttpServer(cfg *config.Config) {
 		middleware.ErrorHandler(),
 		gin.Recovery(),
 	}
+	// Setup gin auto instrumentation
+	r.Use(otelgin.Middleware(cfg.App.AppName))
+
 	r.Use(middlewares...)
 	r.NoRoute(appHandler.RouteNotFound)
 
