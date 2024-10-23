@@ -8,6 +8,7 @@ type DummyRequest struct {
 /*
 all query params set to string.
 use validator to check if string is convertable to number (valid number)
+beware of default value of types
 */
 type DummyRequestQuery struct {
 	Foo string `form:"foo" validate:"required"`
@@ -17,6 +18,7 @@ type DummyRequestQuery struct {
 /*
 all uri is set to string.
 example use validator to check if string is convertable to number (valid number)
+beware of default value of types
 */
 type DummyRequestUri struct {
 	ExampleId string `uri:"example_id" validate:"required,number"`
