@@ -17,12 +17,17 @@ import (
 	"github.com/EkaRahadi/go-codebase/internal/httpserver/ginroutes"
 	"github.com/EkaRahadi/go-codebase/internal/logger"
 	"github.com/EkaRahadi/go-codebase/internal/middleware"
+	"github.com/EkaRahadi/go-codebase/internal/telemetry"
 	"github.com/EkaRahadi/go-codebase/internal/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func StartGinHttpServer(cfg *config.Config) {
+
+	// Telemetry Setup
+	otel := telemetry.NewTelemetry()
+	otel.InitGlobalProviderOpenTelemetry(cfg.Otlp.OtelExporterOtlpMetricsEndpoint, cfg.App.AppName)
 
 	// database
 	db := database.InitGorm(cfg)
@@ -99,6 +104,7 @@ func StartGinHttpServer(cfg *config.Config) {
 	graceDuration := time.Duration(cfg.HttpServer.GracePeriod) * time.Second
 
 	ctx, cancel := context.WithTimeout(context.Background(), graceDuration)
+	otel.Shutdown(ctx)
 	defer cancel()
 
 	logger.Log.Infow("attempt to shutting down the server...")
