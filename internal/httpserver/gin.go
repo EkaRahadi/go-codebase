@@ -70,7 +70,7 @@ func StartGinHttpServer(cfg *config.Config) {
 		ctx.JSON(http.StatusOK, map[string]interface{}{"message": fmt.Sprintf("Welcome to %s BE Server", cfg.App.AppName)})
 	})
 	ginroutes.RegisterExampleRoutes(r, gormWrapper, transactor, vldtr)
-	ginroutes.RegisterTokenRoutes(r, gormWrapper, jwtUtil)
+	ginroutes.RegisterTokenRoutes(r, gormWrapper, vldtr, jwtUtil)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.HttpServer.Host, cfg.HttpServer.Port),

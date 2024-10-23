@@ -57,7 +57,7 @@ func ErrorHandler() gin.HandlerFunc {
 			case isClientError:
 				c.AbortWithStatusJSON(clientError.GetCode(), dto.ErrorResponse{
 					Message: clientError.Error(),
-					Code:    fmt.Sprintf("STOREE-%d", clientError.GetCode()),
+					Code:    fmt.Sprintf("%d", clientError.GetCode()),
 				})
 				return
 			case errors.As(err, &serverError):

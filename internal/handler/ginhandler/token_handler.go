@@ -5,6 +5,7 @@ import (
 
 	"github.com/EkaRahadi/go-codebase/internal/dto"
 	"github.com/EkaRahadi/go-codebase/internal/error"
+	"github.com/EkaRahadi/go-codebase/internal/helper/request"
 	"github.com/EkaRahadi/go-codebase/internal/helper/response"
 	"github.com/EkaRahadi/go-codebase/internal/usecase"
 	"github.com/EkaRahadi/go-codebase/internal/utils"
@@ -23,7 +24,37 @@ func NewTokenHandler(jUtil utils.JWTUtil, userUsecase usecase.UserUsecase) *Toke
 	}
 }
 
-func (h *TokenHandler) Refresh(c *gin.Context) {
+func (h *TokenHandler) GenerateAccessToken(c *gin.Context) {
+	payload := request.GetJsonRequestBody[dto.UserDummyRequest](c)
+
+	user, err := h.userUsecase.GetOneById(c, payload.UserId)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	accessToken, err := h.jUtil.GenerateAccessToken(user)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	refreshToken, err := h.jUtil.GenerateRefreshToken(user)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	// For security it is better to save refresh token in cache. Also we could implement logout feature
+	data := map[string]interface{}{
+		"access_token":  accessToken.Token,
+		"refresh_token": refreshToken.Token,
+	}
+
+	response.ResponseOKData(c, data)
+}
+
+func (h *TokenHandler) GenerateNewAccessToken(c *gin.Context) {
 	userJWT, isExist := c.Get("user")
 	if !isExist {
 		c.Error(error.NewTokenError())

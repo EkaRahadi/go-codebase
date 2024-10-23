@@ -23,3 +23,7 @@ beware of default value of types
 type DummyRequestUri struct {
 	ExampleId string `uri:"example_id" validate:"required,number"`
 }
+
+type UserDummyRequest struct {
+	UserId uint64 `json:"user_id" validate:"required,number"`
+}
