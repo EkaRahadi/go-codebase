@@ -16,6 +16,7 @@ type Config struct {
 	Database    DatabaseConfig
 	Redis       RedisConfig
 	JWTConfig   JWTConfig
+	Otlp        OtlpConfig
 	OauthConfig OauthConfig
 }
 
@@ -75,6 +76,10 @@ type JWTConfig struct {
 	Issuer               string
 	AccessTokenLifespan  time.Duration
 	RefreshTokenLifespan time.Duration
+}
+
+type OtlpConfig struct {
+	OtelExporterOtlpMetricsEndpoint string
 }
 
 type OauthConfig struct {
@@ -255,6 +260,16 @@ func initJWTConfig() JWTConfig {
 		Issuer:               issuer,
 		AccessTokenLifespan:  time.Minute * time.Duration(accessLifespan),
 		RefreshTokenLifespan: time.Hour * time.Duration(refreshLifespan),
+	}
+}
+
+func initOtlpConfig() OtlpConfig {
+	OtelExporterOtlpMetricsEndpoint := os.Getenv("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT")
+	if OtelExporterOtlpMetricsEndpoint == "" {
+		OtelExporterOtlpMetricsEndpoint = "localhost:4317"
+	}
+	return OtlpConfig{
+		OtelExporterOtlpMetricsEndpoint: OtelExporterOtlpMetricsEndpoint,
 	}
 }
 
