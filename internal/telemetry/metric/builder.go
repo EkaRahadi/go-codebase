@@ -7,7 +7,7 @@ import (
 
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 type CloseFunc func(ctx context.Context) error
@@ -33,7 +33,7 @@ func (b meterProviderBuilder) Build(serviceName string) (*metric.MeterProvider, 
 			// semconv.ServiceVersion("0.1.0"),
 		))
 	if err != nil {
-		return nil, nil, fmt.Errorf("error build meter provider")
+		return nil, nil, fmt.Errorf("error build meter provider %w", err)
 	}
 	meterProvider := metric.NewMeterProvider(
 		metric.WithResource(res),

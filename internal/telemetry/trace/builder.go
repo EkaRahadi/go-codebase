@@ -7,7 +7,7 @@ import (
 
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 type CloseFunc func(ctx context.Context) error
@@ -44,7 +44,7 @@ func (b *traceProviderBuilder) Build() (*trace.TracerProvider, CloseFunc, error)
 	)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("error build tracer provider")
+		return nil, nil, fmt.Errorf("error build tracer provider: %w", err)
 	}
 
 	if b.exporter == nil {
