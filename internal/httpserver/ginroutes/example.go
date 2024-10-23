@@ -15,8 +15,9 @@ func RegisterExampleRoutes(r *gin.Engine, gormWrapper *database.GormWrapper, tra
 	exampleRepo := repository.NewExampleRepository(gormWrapper)
 	exampleUsecase := usecase.NewExampleUsecase(exampleRepo, transactor)
 	exampleHandler := ginhandler.NewExampleHandler(exampleUsecase)
-	// Example middleware uri, query, jwt auth, jwt refresh, group route
+	// Example middleware jwt auth,
 
 	r.POST("/example", middleware.JsonBody[dto.DummyRequest](vldtr), exampleHandler.ExampleHandlerFunc)
-	r.GET("/example-with-tx", exampleHandler.ExampleHandlerWithTxFunc)
+	r.GET("/example-with-tx", middleware.Query[dto.DummyRequestQuery](vldtr), exampleHandler.ExampleHandlerWithTxFunc)
+	r.GET("/example/:example_id", middleware.Uri[dto.DummyRequestUri](vldtr), exampleHandler.ExampleHandlerFuncUri)
 }

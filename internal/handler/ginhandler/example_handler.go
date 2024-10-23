@@ -23,7 +23,6 @@ func NewExampleHandler(exampleUsecase usecase.ExampleUsecase) *ExampleHandler {
 
 func (h *ExampleHandler) ExampleHandlerFunc(c *gin.Context) {
 	requestBody := request.GetJsonRequestBody[dto.DummyRequest](c)
-
 	log.Println("requestBody", requestBody)
 
 	res, err := h.exampleUsecase.ExampleUCFunc(c)
@@ -36,7 +35,23 @@ func (h *ExampleHandler) ExampleHandlerFunc(c *gin.Context) {
 }
 
 func (h *ExampleHandler) ExampleHandlerWithTxFunc(c *gin.Context) {
+	requestQuery := request.GetQueryRequest[dto.DummyRequestQuery](c)
+	log.Println("requestQuery", requestQuery)
+
 	res, err := h.exampleUsecase.ExampleUCTXFunc(c)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	response.ResponseOKData(c, res)
+}
+
+func (h *ExampleHandler) ExampleHandlerFuncUri(c *gin.Context) {
+	requestUri := request.GetUriRequest[dto.DummyRequestUri](c)
+	log.Println("requestUri", requestUri)
+
+	res, err := h.exampleUsecase.ExampleUCFunc(c)
 	if err != nil {
 		c.Error(err)
 		return

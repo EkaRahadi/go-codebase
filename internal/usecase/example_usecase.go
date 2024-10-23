@@ -30,7 +30,7 @@ func NewExampleUsecase(exampleRepository repository.ExampleRepository, transacto
 func (u *exampleUsecase) ExampleUCFunc(ctx context.Context) (*entity.Dummy, error) {
 	res, err := u.exampleRepository.ExampleRepoFunc(ctx)
 	if err != nil {
-		return nil, apperror.NewServerError(fmt.Errorf("userUsecase.GetOneById: %w", err))
+		return nil, apperror.NewServerError(fmt.Errorf("userUsecase.ExampleUCFunc: %w", err))
 	}
 
 	return res, nil
@@ -40,9 +40,10 @@ func (u *exampleUsecase) ExampleUCTXFunc(ctx context.Context) (*entity.Dummy, er
 	var res *entity.Dummy
 	var err error = nil
 	err = u.transactor.Transaction(ctx, func(txCtx context.Context) error {
-		res, err = u.exampleRepository.ExampleRepoFunc(ctx)
+
+		res, err = u.exampleRepository.ExampleRepoFunc(txCtx)
 		if err != nil {
-			return apperror.NewServerError(fmt.Errorf("userUsecase.GetOneById: %w", err)) // this will trigger rollback
+			return apperror.NewServerError(fmt.Errorf("userUsecase.ExampleUCTXFunc: %w", err)) // this will trigger rollback
 		}
 
 		return nil // this will trigger commit
