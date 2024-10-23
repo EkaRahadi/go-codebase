@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/EkaRahadi/go-codebase/internal/config"
+	"github.com/EkaRahadi/go-codebase/internal/httpserver"
 	"github.com/EkaRahadi/go-codebase/internal/logger"
 )
 
@@ -10,6 +11,5 @@ func main() {
 	logger.SetZapLogger(cfg)
 	defer logger.Log.Sync()
 
-	logger.Log.Infow("test info log", "key", 123, "key1", "values")
-	logger.Log.Errorw("test error log", "key", 123, "key1", "values")
+	httpserver.StartGinHttpServer(cfg)
 }
