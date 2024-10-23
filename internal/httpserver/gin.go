@@ -69,8 +69,12 @@ func StartGinHttpServer(cfg *config.Config) {
 	r.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, map[string]interface{}{"message": fmt.Sprintf("Welcome to %s BE Server", cfg.App.AppName)})
 	})
-	ginroutes.RegisterExampleRoutes(r, gormWrapper, transactor, vldtr)
-	ginroutes.RegisterTokenRoutes(r, gormWrapper, vldtr, jwtUtil)
+	// ginroutes.RealRoutes(r, gormWrapper, vldtr)
+
+	if cfg.App.Environment == constants.AppEnvironmentDevelopment {
+		ginroutes.RegisterExampleRoutes(r, gormWrapper, transactor, vldtr)
+		ginroutes.RegisterTokenRoutes(r, gormWrapper, vldtr, jwtUtil)
+	}
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.HttpServer.Host, cfg.HttpServer.Port),
