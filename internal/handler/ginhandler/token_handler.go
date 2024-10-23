@@ -85,3 +85,7 @@ func (h *TokenHandler) GenerateNewAccessToken(c *gin.Context) {
 
 	response.ResponseOKData(c, newAccessToken)
 }
+
+func (h *TokenHandler) PrivateHandler(c *gin.Context) {
+	response.ResponseOK(c, "accessing private route", nil)
+}

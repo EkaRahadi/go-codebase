@@ -17,6 +17,7 @@ func RegisterTokenRoutes(r *gin.Engine, gormWrapper *database.GormWrapper, vldtr
 	tokenHandler := ginhandler.NewTokenHandler(jwtUtil, userUsecase)
 
 	r.POST("/token", middleware.JsonBody[dto.UserDummyRequest](vldtr), tokenHandler.GenerateAccessToken)
+	r.GET("private", middleware.AuthorizeJWT(jwtUtil), tokenHandler.PrivateHandler)
 	token := r.Group("/token", middleware.AuthorizeRefreshJWT(jwtUtil))
 	{
 		token.POST("/refresh", tokenHandler.GenerateNewAccessToken)
