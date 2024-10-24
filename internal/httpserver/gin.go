@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Cyprinus12138/otelgin"
 	"github.com/EkaRahadi/go-codebase/internal/config"
 	"github.com/EkaRahadi/go-codebase/internal/constants"
 	"github.com/EkaRahadi/go-codebase/internal/database"
@@ -21,7 +22,6 @@ import (
 	"github.com/EkaRahadi/go-codebase/internal/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func StartGinHttpServer(cfg *config.Config) {
