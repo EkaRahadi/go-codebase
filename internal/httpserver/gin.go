@@ -80,10 +80,10 @@ func StartGinHttpServer(cfg *config.Config) {
 	})
 	// ginroutes.RealRoutes(r, gormWrapper, vldtr)
 
-	if cfg.App.Environment == constants.AppEnvironmentDevelopment {
-		ginroutes.RegisterExampleRoutes(r, gormWrapper, transactor, vldtr)
-		ginroutes.RegisterTokenRoutes(r, gormWrapper, vldtr, jwtUtil)
-	}
+	// if cfg.App.Environment == constants.AppEnvironmentDevelopment {
+	ginroutes.RegisterExampleRoutes(r, gormWrapper, transactor, vldtr)
+	ginroutes.RegisterTokenRoutes(r, gormWrapper, vldtr, jwtUtil)
+	// }
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.HttpServer.Host, cfg.HttpServer.Port),
