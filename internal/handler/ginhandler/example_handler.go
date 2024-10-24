@@ -6,6 +6,7 @@ import (
 	"github.com/EkaRahadi/go-codebase/internal/dto"
 	"github.com/EkaRahadi/go-codebase/internal/helper/request"
 	"github.com/EkaRahadi/go-codebase/internal/helper/response"
+	"github.com/EkaRahadi/go-codebase/internal/httpclient"
 	"github.com/EkaRahadi/go-codebase/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
@@ -22,8 +23,16 @@ func NewExampleHandler(exampleUsecase usecase.ExampleUsecase) *ExampleHandler {
 }
 
 func (h *ExampleHandler) ExampleHandlerFunc(c *gin.Context) {
-	requestBody := request.GetJsonRequestBody[dto.DummyRequest](c)
-	log.Println("requestBody", requestBody)
+	_ = request.GetJsonRequestBody[dto.DummyRequest](c)
+	ctx := c.Request.Context() // make sure Extract parent context to enabled distributed tracing whenever use httpclient
+	client := httpclient.NewClient()
+	resGet, err := client.GetWithQuery(ctx, "https://jsonplaceholder.typicode.com/comments", map[string]string{
+		"postId": "1",
+	})
+	if err != nil {
+		c.Error(err)
+		return
+	}
 
 	res, err := h.exampleUsecase.ExampleUCFunc(c)
 	if err != nil {
@@ -31,7 +40,10 @@ func (h *ExampleHandler) ExampleHandlerFunc(c *gin.Context) {
 		return
 	}
 
-	response.ResponseOKData(c, res)
+	response.ResponseOKData(c, map[string]string{
+		"jsonplaceholder": resGet,
+		"message":         res.Message,
+	})
 }
 
 func (h *ExampleHandler) ExampleHandlerWithTxFunc(c *gin.Context) {
