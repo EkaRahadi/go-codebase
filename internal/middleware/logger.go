@@ -17,7 +17,7 @@ func Logger() gin.HandlerFunc {
 		param := map[string]interface{}{
 			"status_code": c.Writer.Status(),
 			"method":      c.Request.Method,
-			"latency":     time.Since(start),
+			"latency_ms":  time.Since(start).Milliseconds(),
 			"path":        path,
 		}
 
