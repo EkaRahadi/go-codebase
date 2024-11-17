@@ -24,6 +24,4 @@ generate_mocks:
 
 	mockery --dir=./internal/util --all --output=./mocks/util
 	mockery --dir=./internal/helper --all --output=./mocks/helper
-	mockery --dir=./internal/handler/asynqhandler --all --output=./mocks/handler/asynqhandler
-	mockery --dir=./internal/taskqueueclient --all --output=./mocks/taskqueueclient
 
