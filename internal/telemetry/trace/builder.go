@@ -3,8 +3,11 @@ package trace
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
+	"github.com/EkaRahadi/go-codebase/internal/helper/service"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
@@ -40,6 +43,9 @@ func (b *traceProviderBuilder) Build() (*trace.TracerProvider, CloseFunc, error)
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceName(b.name),
+			semconv.ServiceInstanceID(service.GetInstanceID()),
+			attribute.String("k8s.namespace", os.Getenv("POD_NAMESPACE")),
+			semconv.K8SPodNameKey.String(os.Getenv("HOSTNAME")), //podname
 		),
 	)
 

@@ -3,8 +3,11 @@ package metric
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
+	"github.com/EkaRahadi/go-codebase/internal/helper/service"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
@@ -30,6 +33,9 @@ func (b meterProviderBuilder) Build(serviceName string) (*metric.MeterProvider, 
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceName(serviceName),
+			semconv.ServiceInstanceID(service.GetInstanceID()),
+			attribute.String("k8s.namespace", os.Getenv("POD_NAMESPACE")),
+			semconv.K8SPodNameKey.String(os.Getenv("HOSTNAME")), //podname
 			// semconv.ServiceVersion("0.1.0"),
 		))
 	if err != nil {
