@@ -13,19 +13,20 @@ import (
 
 type ExampleHandler struct {
 	exampleUsecase usecase.ExampleUsecase
+	httpclient     httpclient.HttpClient
 }
 
-func NewExampleHandler(exampleUsecase usecase.ExampleUsecase) *ExampleHandler {
+func NewExampleHandler(exampleUsecase usecase.ExampleUsecase, httpclient httpclient.HttpClient) *ExampleHandler {
 	return &ExampleHandler{
 		exampleUsecase: exampleUsecase,
+		httpclient:     httpclient,
 	}
 }
 
 func (h *ExampleHandler) ExampleHandlerFunc(c *gin.Context) {
 	_ = request.GetJsonRequestBody[dto.DummyRequest](c)
 	ctx := c.Request.Context() // make sure Extract parent context to enabled distributed tracing whenever use httpclient
-	client := httpclient.NewClient()
-	resGet, err := client.GetWithQuery(ctx, "https://jsonplaceholder.typicode.com/comments", map[string]string{
+	resGet, err := h.httpclient.GetWithQuery(ctx, "https://jsonplaceholder.typicode.com/comments", map[string]string{
 		"postId": "1",
 	})
 	if err != nil {
