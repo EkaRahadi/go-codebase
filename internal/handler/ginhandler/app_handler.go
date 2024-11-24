@@ -13,5 +13,6 @@ func NewAppHandler() *AppHandler {
 }
 
 func (h *AppHandler) RouteNotFound(c *gin.Context) {
+	//nolint:errcheck // no need to check
 	c.Error(apperror.NewRouteNotFoundError())
 }

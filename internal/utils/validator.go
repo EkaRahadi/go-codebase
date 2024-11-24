@@ -40,8 +40,11 @@ func NewCustomValidator() *customValidator {
 
 		return name
 	})
+	//nolint:errcheck // no need to check
 	validate.RegisterValidation("username", validateUsername)
+	//nolint:errcheck // no need to check
 	validate.RegisterValidation("password", validatePassword)
+	//nolint:errcheck // no need to check
 	en_translations.RegisterDefaultTranslations(validate, trans)
 	errorStructTranslator := &customValidator{
 		validate:   validate,
@@ -55,6 +58,7 @@ func (vldtr customValidator) Validate(obj interface{}) error {
 	err := vldtr.validate.Struct(obj)
 	errsData := make([]dto.ValidationErrorResponse, 0)
 	if err != nil {
+		//nolint:errcheck // no need to check
 		validatorErrs := err.(validator.ValidationErrors)
 		for _, e := range validatorErrs {
 			translatedErr := e.Translate(vldtr.translator)

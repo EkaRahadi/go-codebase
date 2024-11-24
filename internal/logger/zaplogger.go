@@ -52,7 +52,6 @@ func SetZapLogger(cfg *config.Config) {
 			zapcore.NewCore(consoleEncoder, consoleWriter, level),
 			zapcore.NewCore(encoder, zapcore.AddSync(conn), level), // UDP Core
 		)
-
 	}
 
 	logger := zap.New(core)

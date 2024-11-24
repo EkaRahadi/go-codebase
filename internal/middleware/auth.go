@@ -25,6 +25,7 @@ func AuthorizeJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 		s := strings.Split(authHeader, fmt.Sprintf("%v ", constants.Schema))
 		authError := apperror.NewUnauthorizedError(errors.New("Unauthorized"))
 		if len(s) < 2 {
+			//nolint:errcheck // no need to check
 			c.Error(authError)
 			c.Abort()
 			return
@@ -33,6 +34,7 @@ func AuthorizeJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 		decodedToken := s[1]
 		token, err := jUtil.ValidateAccessToken(decodedToken)
 		if err != nil || !token.Valid {
+			//nolint:errcheck // no need to check
 			c.Error(authError)
 			c.Abort()
 			return
@@ -40,6 +42,7 @@ func AuthorizeJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
+			//nolint:errcheck // no need to check
 			c.Error(authError)
 			c.Abort()
 			return
@@ -49,6 +52,7 @@ func AuthorizeJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 		var user dto.AccessUserJWT
 		err = json.Unmarshal(userJson, &user)
 		if err != nil {
+			//nolint:errcheck // no need to check
 			c.Error(authError)
 			c.Abort()
 			return
@@ -56,7 +60,6 @@ func AuthorizeJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 
 		c.Set("user", user)
 		c.Next()
-
 	}
 }
 
@@ -70,6 +73,7 @@ func AuthorizeRefreshJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 		s := strings.Split(authHeader, fmt.Sprintf("%v ", constants.Schema))
 		authError := apperror.NewUnauthorizedError(errors.New("Unauthorized"))
 		if len(s) < 2 {
+			//nolint:errcheck // no need to check
 			c.Error(authError)
 			c.Abort()
 			return
@@ -77,6 +81,7 @@ func AuthorizeRefreshJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 		decodedToken := s[1]
 		token, err := jUtil.ValidateRefreshToken(decodedToken)
 		if err != nil || !token.Valid {
+			//nolint:errcheck // no need to check
 			c.Error(authError)
 			c.Abort()
 			return
@@ -84,6 +89,7 @@ func AuthorizeRefreshJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
+			//nolint:errcheck // no need to check
 			c.Error(authError)
 			c.Abort()
 			return
@@ -93,6 +99,7 @@ func AuthorizeRefreshJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 		var user dto.RefreshUserJWT
 		err = json.Unmarshal(userJson, &user)
 		if err != nil {
+			//nolint:errcheck // no need to check
 			c.Error(authError)
 			c.Abort()
 			return
@@ -100,6 +107,5 @@ func AuthorizeRefreshJWT(jUtil utils.JWTUtil) gin.HandlerFunc {
 
 		c.Set("user", user)
 		c.Next()
-
 	}
 }

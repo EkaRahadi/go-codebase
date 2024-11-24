@@ -11,12 +11,14 @@ func bindAndValidate[requestStruct any](c *gin.Context, contextName string, bind
 	var body requestStruct
 
 	if err := binder(&body); err != nil {
+		//nolint:errcheck // no need to check
 		c.Error(apperror.NewClientError(err))
 		c.Abort()
 		return
 	}
 
 	if err := validator.Validate(body); err != nil {
+		//nolint:errcheck // no need to check
 		c.Error(err)
 		c.Abort()
 		return

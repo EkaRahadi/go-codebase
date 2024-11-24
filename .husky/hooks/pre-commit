@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "Formatting Go files..."
+goimports -w .
+
+echo "Running golangci-lint with fix..."
+golangci-lint run --fix
+
+echo "Done"

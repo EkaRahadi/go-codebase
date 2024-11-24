@@ -1,3 +1,19 @@
+## Setup Linter - Mandatory
+
+### Windows
+### binary will be $(go env GOPATH)/bin/golangci-lint
+> 1. curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.62.0
+> 2. golangci-lint --version
+
+### MacOS
+> `brew install golangci-lint && brew upgrade golangci-lint`
+
+Or go to this [link](https://golangci-lint.run/welcome/install/#local-installation)
+
+## Setup Git Hooks - Mandatory
+1. run this on terminal `go install github.com/automation-co/husky@latest`
+2. run this on terminal `go install golang.org/x/tools/cmd/goimports@latest`
+
 ## Run the app in dev environment
 
 1. Ensure that `golang` is already installed in your system

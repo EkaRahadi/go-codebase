@@ -16,7 +16,6 @@ type ExampleHandler struct {
 }
 
 func NewExampleHandler(exampleUsecase usecase.ExampleUsecase) *ExampleHandler {
-
 	return &ExampleHandler{
 		exampleUsecase: exampleUsecase,
 	}

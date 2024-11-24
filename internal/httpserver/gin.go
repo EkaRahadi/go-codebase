@@ -25,7 +25,6 @@ import (
 )
 
 func StartGinHttpServer(cfg *config.Config) {
-
 	// Telemetry Setup
 	otel := telemetry.NewTelemetry()
 	otel.InitGlobalProviderOpenTelemetry(cfg.Otlp.OtelExporterOtlpMetricsEndpoint, cfg.App.AppName)

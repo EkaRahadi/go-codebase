@@ -40,7 +40,6 @@ func (u *exampleUsecase) ExampleUCTXFunc(ctx context.Context) (*entity.Dummy, er
 	var res *entity.Dummy
 	var err error = nil
 	err = u.transactor.Transaction(ctx, func(txCtx context.Context) error {
-
 		res, err = u.exampleRepository.ExampleRepoFunc(txCtx)
 		if err != nil {
 			return apperror.NewServerError(fmt.Errorf("userUsecase.ExampleUCTXFunc: %w", err)) // this will trigger rollback

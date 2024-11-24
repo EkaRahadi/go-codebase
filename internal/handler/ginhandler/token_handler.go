@@ -66,7 +66,7 @@ func (h *TokenHandler) GenerateNewAccessToken(c *gin.Context) {
 	case dto.RefreshUserJWT:
 		var userId = userJWT.UserId
 
-		// TODO: get user by userId - verifying user existance
+		// TODO: get user by userId - verifying user existence
 		user, err := h.userUsecase.GetOneById(c, userId)
 		if err != nil {
 			c.Error(err)

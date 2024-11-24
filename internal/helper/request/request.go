@@ -6,17 +6,21 @@ import (
 )
 
 func GetJsonRequestBody[bodyRequestType any](c *gin.Context) bodyRequestType {
+	//nolint:errcheck // no need to check
 	return c.MustGet(constants.ContextRequestBodyJSON).(bodyRequestType)
 }
 
 func GetUriRequest[bodyRequestType any](c *gin.Context) bodyRequestType {
+	//nolint:errcheck // no need to check
 	return c.MustGet(constants.ContextRequestBodyURI).(bodyRequestType)
 }
 
 func GetQueryRequest[bodyRequestType any](c *gin.Context) bodyRequestType {
+	//nolint:errcheck // no need to check
 	return c.MustGet(constants.ContextRequestBodyQuery).(bodyRequestType)
 }
 
 func GetFormRequest[bodyRequestType any](c *gin.Context) bodyRequestType {
+	//nolint:errcheck // no need to check
 	return c.MustGet(constants.ContextRequestBodyForm).(bodyRequestType)
 }

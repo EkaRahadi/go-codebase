@@ -14,7 +14,6 @@ func InitRedis(cfg *config.Config) *redis.Client {
 	redisCfg := cfg.Redis
 
 	if cfg.App.Environment == constants.AppEnvironmentProduction {
-
 		client := redis.NewClient(&redis.Options{
 			Addr:     fmt.Sprintf("%s:%d", redisCfg.Host, redisCfg.Port),
 			Password: redisCfg.Password,

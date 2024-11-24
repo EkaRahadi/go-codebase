@@ -60,5 +60,4 @@ func (b meterProviderBuilder) Build(serviceName string) (*metric.MeterProvider, 
 		}
 		return nil
 	}, nil
-
 }
