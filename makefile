@@ -22,7 +22,7 @@ generate_mocks:
 
 	mockery --dir=./internal/usecase --all --output=./mocks/usecase
 
-	mockery --dir=./internal/util --all --output=./mocks/util
+	mockery --dir=./internal/utils --all --output=./mocks/utils
 	mockery --dir=./internal/helper --all --output=./mocks/helper
 	mockery --dir=./internal/httpclient --all --output=./mocks/httpclient
 
