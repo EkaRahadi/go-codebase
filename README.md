@@ -14,6 +14,9 @@ Or go to this [link](https://golangci-lint.run/welcome/install/#local-installati
 1. run this on terminal `go install github.com/automation-co/husky@latest`
 2. run this on terminal `go install golang.org/x/tools/cmd/goimports@latest`
 
+## Extra
+> All available commands is in `makefile`
+
 ## Run the app in dev environment
 
 1. Ensure that `golang` is already installed in your system
