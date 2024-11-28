@@ -1,0 +1,151 @@
+services:
+  redis_db:
+    image: redis:6-alpine
+    restart: always
+    command: /bin/sh -c "redis-server --requirepass P@ssw0rd"
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+  postgresql:
+    container_name: postgresql
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./seeding:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: postgres
+  apps-be:
+    build:
+      context: .
+    depends_on:
+      - postgresql
+      - redis_db
+    ports:
+      - 8080:8080
+    environment:
+      - APP_ENVIRONMENT=development
+      - HTTP_SERVER_HOST=
+      - HTTP_SERVER_PORT=8080
+      - HTTP_SERVER_GRACE_PERIOD=15
+      - HTTP_MAX_UPLOAD_FILE_SIZE_KB=8192
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=postgresql
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_SSL_MODE=disable
+      - DB_MAX_IDLE_CONN=10
+      - DB_MAX_OPEN_CONN=100
+      - DB_CONN_MAX_LIFETIME=60
+      - SMTP_HOST=smtp-host
+      - SMTP_USER=smtp-user
+      - SMTP_PASSWORD=smtp-password
+      - SMTP_PORT=1025
+      - SMTP_DEFAULT_FROM=smtp-default-mail-address
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - QUEUE_CONCURRENT_WORKER=10
+      - QUEUE_CRITICAL=6
+      - QUEUE_DEFAULT=3
+      - QUEUE_LOW=1
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.9.0
+    networks:
+      - tooling-network
+    ports:
+      - "7020:7030/udp"
+    command: >
+      filebeat -e -strict.perms=false
+      -c /usr/share/filebeat/filebeat.yml
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+    depends_on:
+      - logstash
+  logstash:
+      image: docker.elastic.co/logstash/logstash:8.9.0
+      container_name: logstash
+      volumes:
+        - ./observability/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro #:ro is read only file
+      ports:
+        - "5044:5044"  # Expose UDP input port
+      # command: >
+      #   bash -c "bin/logstash-plugin install logstash-filter-json_encode && logstash"
+      environment:
+        - LOGSTASH_JAVA_OPTS=-Xms256m -Xmx256m #limiting memory
+      networks:
+        - tooling-network
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    networks:
+      - tooling-network
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: 9411
+    # expose:
+    #   - "16686"
+    ports:
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      # - 4317:4317
+      - 4318:4318
+      - 14268:14268
+      - 14250:14250
+      - 9411:9411
+    restart: always
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    networks:
+      - tooling-network
+    # expose:
+    #   - "4317"
+    ports:
+      - "1888:1888"   # pprof extension
+      - "8888:8888"   # Prometheus metrics exposed by the collector
+      - "8889:8889"   # Prometheus exporter metrics
+      - "13133:13133" # health_check extension
+      - "4317:4317"   # OTLP gRPC receiver
+      - "55679:55679" # zpages extension
+    volumes:
+      - "./observability:/observability"
+    command: ["--config=/observability/otel-config.yaml", "${OTELCOL_ARGS}"]
+    restart: always
+    environment:
+      - OTEL_NEW_RELIC_EXPORTER_OTLP_ENDPOINT=${OTEL_NEW_RELIC_EXPORTER_OTLP_ENDPOINT}
+      - OTEL_NEW_RELIC_EXPORTER_API_KEY=${OTEL_NEW_RELIC_EXPORTER_API_KEY}
+    depends_on:
+      - jaeger
+  grafana:
+    image: grafana/grafana:11.3.0
+    networks:
+      - tooling-network
+    ports:
+      - 3000:3000
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+      - ./observability/grafana/dashboards:/etc/grafana/demo-dashboards
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    networks:
+      - tooling-network
+    volumes:
+      - ./observability/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - otel-collector
+
+volumes:
+  grafana_data:
+  prometheus_data:
+
+networks:
+  tooling-network:
+    driver: bridge

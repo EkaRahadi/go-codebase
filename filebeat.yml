@@ -1,0 +1,16 @@
+filebeat.inputs:
+  - type: udp
+    enabled: true
+    host: "0.0.0.0:7030"
+    encoding: utf-8
+    processors:
+        - decode_json_fields:
+            fields: ["message"]
+            target: "event"
+            overwrite_keys: true
+        - drop_fields:
+            fields: ["message"]
+# output.console:
+#   pretty: true
+output.logstash:
+  hosts: ["logstash:5044"]

@@ -1,0 +1,51 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    const_labels: { }
+  otlp/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+processors:
+  batch:
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 70
+    spike_limit_percentage: 50
+  # resourcedetection:
+  #   detectors: [gcp]
+  #   timeout: 10s
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  # zpages:
+  #   endpoint: :55679
+
+service:
+  extensions: [ pprof, health_check ]
+  pipelines:
+    traces:
+      receivers: [ otlp ]
+      processors:
+        - batch
+      exporters:
+        - otlp/jaeger
+        # - googlecloud
+        # - otlp
+    metrics:
+      receivers: [ otlp ]
+      processors:
+        - memory_limiter
+        - batch
+      exporters:
+        - prometheus
+        # - googlecloud
+        # - otlp
