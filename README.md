@@ -24,6 +24,9 @@ Or go to this [link](https://golangci-lint.run/welcome/install/#local-installati
 3. Clone the project and go to the directory
 4. Type `go mod tidy` to install the packages
 5. Type `docker compose up` to run the http server
+6. Jaeger UI for tracing can be accessed at `http://localhost:16686`
+7. Prometheus can be accessed at `http://localhost:9090`
+8. Grafana can be accessed at `http://localhost:3000`
 
 ## Create a branch when developing a feature
 

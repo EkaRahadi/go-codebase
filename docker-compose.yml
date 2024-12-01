@@ -1,56 +1,84 @@
 services:
   redis_db:
+    networks:
+      - tooling-network
     image: redis:6-alpine
     restart: always
     command: /bin/sh -c "redis-server --requirepass P@ssw0rd"
     ports:
       - 6379:6379
-    volumes:
-      - redis:/data
+    # volumes:
+    #   - redis:/data
   postgresql:
+    networks:
+      - tooling-network
     container_name: postgresql
     image: postgres:15
     restart: always
     ports:
       - "5432:5432"
-    volumes:
-      - ./seeding:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      retries: 5
+    # volumes:
+    #   - ./seeding:/docker-entrypoint-initdb.d
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
   apps-be:
     build:
       context: .
     depends_on:
-      - postgresql
-      - redis_db
+      postgresql:
+        condition: service_healthy
+      redis_db:
+        condition: service_started
+      filebeat:
+        condition: service_started
+      jaeger:
+        condition: service_started
+      otel-collector:
+        condition: service_started
     ports:
       - 8080:8080
+    networks:
+      - tooling-network
     environment:
-      - APP_ENVIRONMENT=development
-      - HTTP_SERVER_HOST=
+      - APP_NAME=apps_be
+      - APP_ENVIRONMENT=production
+      - APP_LOGLEVEL=info #info | warn | error
+      - ACCESS_SECRET_KEY=9dzzJhgvEex2L8pzYoaUZWsKfVVzRs
+      - REFRESH_SECRET_KEY=YiIF34jT5fYCBjRJNCoV9HRffnFFxZ
+      - JWT_ISSUER=apps-be
+      - JWT_ACCESS_TOKEN_LIFESPAN=5
+      - JWT_REFRESH_TOKEN_LIFESPAN=24
+      - FILEBEAT_HOST=filebeat
+      - FILEBEAT_PORT=7030
+      - HTTP_SERVER_HOST=0.0.0.0
       - HTTP_SERVER_PORT=8080
       - HTTP_SERVER_GRACE_PERIOD=15
       - HTTP_MAX_UPLOAD_FILE_SIZE_KB=8192
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_HOST=postgresql
-      - DB_PORT=5432
-      - DB_NAME=postgres
       - DB_SSL_MODE=disable
       - DB_MAX_IDLE_CONN=10
       - DB_MAX_OPEN_CONN=100
       - DB_CONN_MAX_LIFETIME=60
-      - SMTP_HOST=smtp-host
-      - SMTP_USER=smtp-user
-      - SMTP_PASSWORD=smtp-password
-      - SMTP_PORT=1025
-      - SMTP_DEFAULT_FROM=smtp-default-mail-address
-      - REDIS_HOST=redis
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_PORT=5432
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DBNAME=postgres
+      - REDIS_HOST=localhost
       - REDIS_PORT=6379
-      - QUEUE_CONCURRENT_WORKER=10
-      - QUEUE_CRITICAL=6
-      - QUEUE_DEFAULT=3
-      - QUEUE_LOW=1
+      - REDIS_PASSWORD=P@ssw0rd
+      - REDIS_USERNAME=default
+      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OAUTH_CLIENT_ID=oauth_client_id
+      - OAUTH_CLIENT_SECRET=oauth_client_secret
+      - OAUTH_AUTH_URL=oauth_auth_url
+      - OAUTH_TOKEN_URL=oauth_token_url
   filebeat:
     image: docker.elastic.co/beats/filebeat:8.9.0
     networks:
@@ -83,8 +111,6 @@ services:
       - tooling-network
     environment:
       COLLECTOR_ZIPKIN_HOST_PORT: 9411
-    # expose:
-    #   - "16686"
     ports:
       - 6831:6831/udp
       - 6832:6832/udp
@@ -97,6 +123,7 @@ services:
       - 9411:9411
     restart: always
   otel-collector:
+    container_name: otel-collector
     image: otel/opentelemetry-collector-contrib:latest
     networks:
       - tooling-network
@@ -111,11 +138,11 @@ services:
       - "55679:55679" # zpages extension
     volumes:
       - "./observability:/observability"
-    command: ["--config=/observability/otel-config.yaml", "${OTELCOL_ARGS}"]
+    command: ["--config=/observability/otel-config.yaml"]
     restart: always
-    environment:
-      - OTEL_NEW_RELIC_EXPORTER_OTLP_ENDPOINT=${OTEL_NEW_RELIC_EXPORTER_OTLP_ENDPOINT}
-      - OTEL_NEW_RELIC_EXPORTER_API_KEY=${OTEL_NEW_RELIC_EXPORTER_API_KEY}
+    # environment:
+    #   - OTEL_NEW_RELIC_EXPORTER_OTLP_ENDPOINT=${OTEL_NEW_RELIC_EXPORTER_OTLP_ENDPOINT}
+    #   - OTEL_NEW_RELIC_EXPORTER_API_KEY=${OTEL_NEW_RELIC_EXPORTER_API_KEY}
     depends_on:
       - jaeger
   grafana:

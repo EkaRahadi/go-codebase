@@ -26,8 +26,9 @@ func NewExampleHandler(exampleUsecase usecase.ExampleUsecase, httpclient httpcli
 func (h *ExampleHandler) ExampleHandlerFunc(c *gin.Context) {
 	_ = request.GetJsonRequestBody[dto.DummyRequest](c)
 	ctx := c.Request.Context() // make sure Extract parent context to enabled distributed tracing whenever use httpclient
-	resGet, err := h.httpclient.GetWithQuery(ctx, "https://jsonplaceholder.typicode.com/comments", map[string]string{
-		"postId": "1",
+	resGet, err := h.httpclient.GetWithQuery(ctx, "http://localhost:8080/example-with-tx", map[string]string{
+		"foo": "1",
+		"bar": "2",
 	})
 	if err != nil {
 		c.Error(err)
