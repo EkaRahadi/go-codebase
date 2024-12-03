@@ -22,7 +22,7 @@ func Logger() gin.HandlerFunc {
 		}
 
 		if len(c.Errors) == 0 {
-			logger.Log.Infow("incoming request success", "meta", param)
+			logger.Log.Infow("request success", "meta", param)
 		} else {
 			errList := []error{}
 			for _, err := range c.Errors {
@@ -31,7 +31,7 @@ func Logger() gin.HandlerFunc {
 
 			if len(errList) > 0 {
 				param["errors"] = errList
-				logger.Log.Errorw("incoming request having error", "meta", param)
+				logger.Log.Errorw("request error", "meta", param)
 			}
 		}
 	}
