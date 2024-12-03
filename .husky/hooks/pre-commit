@@ -2,8 +2,16 @@
 
 echo "Formatting Go files..."
 goimports -w .
+if [ $? -ne 0 ]; then
+  echo "goimports failed. Commit aborted."
+  exit 1
+fi
 
 echo "Running golangci-lint with fix..."
 golangci-lint run --fix
+if [ $? -ne 0 ]; then
+  echo "golangci-lint failed. Commit aborted."
+  exit 1
+fi
 
 echo "Done"
