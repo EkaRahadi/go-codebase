@@ -17,6 +17,36 @@ exporters:
       insecure: true
 
 processors:
+  # Add resource attributes to metrics as labels
+  resource:
+    attributes:
+      - key: telemetry.sdk.language
+        action: delete
+      - key: telemetry.sdk.name
+        action: delete
+      - key: telemetry.sdk.version
+        action: delete
+  attributes:
+    include:
+      match_type: strict
+      attributes:
+        - key: service.name
+        - key: service.instance.id
+        - key: k8s.namespace
+        - key: k8s.pod.name
+    actions:
+      - key: service.name
+        action: insert
+        from_attribute: service.name
+      - key: service.instance.id
+        action: insert
+        from_attribute: service.instance.id
+      - key: k8s.namespace
+        action: insert
+        from_attribute: k8s.namespace
+      - key: k8s.pod.name
+        action: insert
+        from_attribute: k8s.pod.name
   batch:
   memory_limiter:
     check_interval: 1s
@@ -49,6 +79,8 @@ service:
       receivers: [ otlp ]
       processors:
         - memory_limiter
+        - resource
+        - attributes
         - batch
       exporters:
         - prometheus
