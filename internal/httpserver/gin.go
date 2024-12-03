@@ -77,6 +77,14 @@ func StartGinHttpServer(cfg *config.Config) {
 	r.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, map[string]interface{}{"message": fmt.Sprintf("Welcome to %s BE Server", cfg.App.AppName)})
 	})
+	r.GET("/healthz", func(ctx *gin.Context) {
+		otelCtx, span := telemetry.Tracer.Start(ctx.Request.Context(), "Do Something Long")
+		time.Sleep(1 * time.Second)
+		span.End()
+
+		ctx.Request = ctx.Request.WithContext(otelCtx)
+		ctx.JSON(http.StatusOK, map[string]interface{}{"message": fmt.Sprintf("Welcome to %s BE Server", cfg.App.AppName)})
+	})
 	// ginroutes.RealRoutes(r, gormWrapper, vldtr)
 
 	// if cfg.App.Environment == constants.AppEnvironmentDevelopment {

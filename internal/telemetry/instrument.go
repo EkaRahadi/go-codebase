@@ -4,5 +4,5 @@ import (
 	"go.opentelemetry.io/otel"
 )
 
-var tracer = otel.Tracer("")
-var meter = otel.Meter("")
+var Tracer = otel.Tracer("")
+var Meter = otel.Meter("")
