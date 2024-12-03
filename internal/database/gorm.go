@@ -55,17 +55,17 @@ func InitGorm(cfg *config.Config) *gorm.DB {
 		Logger: newLogger,
 	})
 	if err != nil {
-		logger.Log.Fatalw("error initializing database: ", err.Error())
+		logger.Log.Fatalw("error initializing database", "meta: ", err.Error())
 	}
 
 	// Add auto instrumentation
 	if err := db.Use(otelgorm.NewPlugin()); err != nil {
-		logger.Log.Fatalw("error instrumenting database: ", err.Error())
+		logger.Log.Fatalw("error instrumenting database", "meta", err.Error())
 	}
 
 	dbinstance, err := db.DB()
 	if err != nil {
-		logger.Log.Fatalw("error getting generic database instance: ", err.Error())
+		logger.Log.Fatalw("error getting generic database instance:", "meta: ", err.Error())
 	}
 
 	dbinstance.SetMaxIdleConns(dbCfg.MaxIdleConn)

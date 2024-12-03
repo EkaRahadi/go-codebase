@@ -54,7 +54,7 @@ func SetZapLogger(cfg *config.Config) {
 		)
 	}
 
-	logger := zap.New(core)
+	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 	zap := &zapLogger{
 		sugared: logger.Sugar().With("app_name", cfg.App.AppName),
 	}
